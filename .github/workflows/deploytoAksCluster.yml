@@ -1,0 +1,63 @@
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@master
+    
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create ACR
+      id: create-acr
+      run: |
+        az acr create -n akstestebf19 -g akstestebf19a7d6-rg --location "Brazil South" --sku Basic --admin-enabled
+        echo "::set-output name=acr_username::`az acr credential show -n akstestebf19 --query username | xargs`"
+        echo "::set-output name=acr_password::`az acr credential show -n akstestebf19 --query passwords[0].value | xargs`"
+        echo "::add-mask::`az acr credential show -n akstestebf19 --query passwords[0].value | xargs`"
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: akstestebf19.azurecr.io
+        username: ${{ steps.create-acr.outputs.acr_username }}
+        password: ${{ steps.create-acr.outputs.acr_password }}
+
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" -t akstestebf19.azurecr.io/aksteste:${{ github.sha }} --label dockerfile-path=Dockerfile
+        docker push akstestebf19.azurecr.io/aksteste:${{ github.sha }}
+    
+    - uses: azure/k8s-set-context@v1
+      id: login
+      with:
+         kubeconfig: ${{ secrets.aks_aksteste_kubeConfig }}
+    
+    - name: Create namespace
+      run: |
+        namespacePresent=`kubectl get namespace | grep aks_testebf19 | wc -l`
+        if [ $namespacePresent -eq 0 ]
+        then
+            echo `kubectl create namespace aks_testebf19`
+        fi
+
+    - uses: azure/k8s-create-secret@v1
+      with:
+        namespace: aks_testebf19
+        container-registry-url: akstestebf19.azurecr.io
+        container-registry-username: ${{ steps.create-acr.outputs.acr_username }}
+        container-registry-password: ${{ steps.create-acr.outputs.acr_password }}
+        secret-name: akstestedockerauth
+       
+    - uses: azure/k8s-deploy@v1.2
+      with:
+        namespace: aks_testebf19
+        manifests: |
+          manifests/deployment.yml
+          manifests/service.yml
+        images: |
+          akstestebf19.azurecr.io/aksteste:${{ github.sha }}
+        imagepullsecrets: |
+          akstestedockerauth   
