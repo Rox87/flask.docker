@@ -1,0 +1,150 @@
+<head>
+  <link rel="stylesheet" href="/static/css/mystyle.css">
+  </head>  
+<br>
+<center><h2>Web app Control</h2><form id="usrform">
+  Dispositivo: <select id="deviceId" name="deviceId" onChange="dev_change()">
+  <option value="60a8081ac7ba4fd98580c03074315136">Mi 9T Pro</option>
+  <option value="ca1a21fa70054a248dd63e4f5eff90ea">Moto G50</option>
+  <option id="Asus" value="300b0bb04b2f4924b4412dd1bc8d79b3,1c9f24efe8174d74a39f3cdf72307b48">Asus</option>
+  <option id="PC" value="6bc07f1a70164a399be2ff09679b28fa,ccb1dfefb363449fa40a26237c94e1d2">PC</option>
+  </select><br><br>
+  Comando: <select id="cmd" name="cmd" onChange="cmd_change()">
+   <option value="text">mensagem</option>
+   <option value="say">falar</option>
+   <option value="url">site</option>
+   <option value="app">aplicativo</option>
+   <option value="file">arquivo</option>
+   <option value="location">localização</option>
+   <option value="clipboard">clipboard</option>
+   <option value="wallpaper">papel de parede</option>
+   <option value="mediaSearch">pesquisa mídia</option>
+   <option value="find">encontre-me</option>
+   <option value="callnumber">ligar</option>
+  </select><br><br> 
+  <div id="say" style="display: none;">Diga: <br><textarea id="say2" name="say"></textarea><br><br><input id="language2" name="language" value="pt-br" type="text"><br><br></div>
+  <div id="wallpaper" style="display: none;"><br><textarea id="wallpaper2" name="wallpaper"></textarea><br><br></div>
+  <div id="app" style="display: none;">App: <br><textarea id="app2" name="app"></textarea><br><br></div>
+  <div id="mediaSearch" style="display: none;">Música: <br><textarea id="mediaSearch2" name="mediaSearch"></textarea><br><br></div>
+  <div id="location" style="display: none;">Para:<br><select id="location2" name="location"> 
+    <option value="60a8081ac7ba4fd98580c03074315136">Mi 9T Pro</option>
+    <option value="ca1a21fa70054a248dd63e4f5eff90ea">Moto G50</option>
+    <option id="Asus" value="300b0bb04b2f4924b4412dd1bc8d79b3,1c9f24efe8174d74a39f3cdf72307b48" >Asus</option>
+    <option id="PC" value="6bc07f1a70164a399be2ff09679b28fa,ccb1dfefb363449fa40a26237c94e1d2">PC</option>
+    </select><br><br></div>
+
+  <div id="file" style="display: none;">Arquivo: <br><textarea id="file2" name="file"></textarea><br><br></div>
+  <div id="callnumber" style="display: none;">Telefone: <br><textarea id="callnumber2" name="callnumber"></textarea><br><br></div>
+  <div id="find" style="display: none;">Encontre-me: <select id="find2" name="find">
+  <option value="false">desativar</option>
+  <option value="true">ativar</option>
+  </select><br><br></div>
+
+  <div id="text" style="display: block;" >Título: <br><input id="title2" name="title" type="text"><br><br>Texto: <br><textarea id="text2" name="text"></textarea><br><br></div>
+  <div id="url" style="display: none;" >URL: <br><textarea id="url2" name="url"></textarea><br><br></div>
+  <div id="clipboard" style="display: none;" >Clipboard: <br><textarea id="clipboard2" name="clipboard"></textarea><br><br></div>
+ <div id="key" style="display: none;" ><input type="password" value="8fbb250caed5431e80d526bf85ed107f" type="hidden" id="apikey" name="apikey"></div>
+</form>
+
+<button>Send Request</button>
+<br>
+<div id="div1"></div>
+
+</center>
+<script>
+
+function cmd_change(){
+    var first = document.getElementById('cmd');
+
+    document.getElementById('div1').innerHTML = ""
+
+    document.getElementById('url2').value = "";
+    document.getElementById('language2').value = "pt-Br";
+    document.getElementById('title2').value = "";
+    document.getElementById('find2').value = "false";
+    document.getElementById('text2').value = "";
+    document.getElementById('say2').value = "";
+    document.getElementById('callnumber2').value = "";
+    document.getElementById('app2').value = "";
+    document.getElementById('clipboard2').value = "";
+    document.getElementById('file2').value = "";
+    document.getElementById('location2').value = "";
+    document.getElementById('wallpaper2').value = "";
+    document.getElementById('mediaSearch2').value = "";
+
+    document.getElementById('url').style.display = "None";
+    document.getElementById('find').style.display = "None";
+    document.getElementById('text').style.display = "None";
+    document.getElementById('say').style.display = "None";
+    document.getElementById('callnumber').style.display = "None";
+    document.getElementById('app').style.display = "None";
+    document.getElementById('clipboard').style.display = "None";
+    document.getElementById('file').style.display = "None";
+    document.getElementById('location').style.display = "None";
+    document.getElementById('wallpaper').style.display = "None";
+    document.getElementById('mediaSearch').style.display = "None";
+
+    if(first.value=='say'){
+    document.getElementById('say').style.display = "block";
+    }
+    else if(first.value=='find')
+    {
+    document.getElementById('find').style.display = "block";
+    }
+    else if(first.value=='mediaSearch')
+    {
+    document.getElementById('mediaSearch').style.display = "block";
+    }
+    else if(first.value=='location')
+    {
+    document.getElementById('location').style.display = "block";
+    document.getElementById('location2').value = $('#Asus').val();
+    }
+    else if(first.value=='clipboard')
+    {
+    document.getElementById('clipboard').style.display = "block";
+    }
+    else if(first.value=='wallpaper')
+    {
+    document.getElementById('wallpaper').style.display = "block";
+    }
+else if(first.value=='url')
+    {
+     document.getElementById('url').style.display = "block";
+    }
+else if(first.value=='callnumber')
+    {
+     document.getElementById('callnumber').style.display = "block";
+    }
+else if(first.value=='app')
+    {
+     document.getElementById('app').style.display = "block";
+    }
+    else if(first.value=='file')
+    {
+     document.getElementById('file').style.display = "block";
+    }
+    else
+    {	
+     document.getElementById('text').style.display = "block";
+   }
+ 
+}
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+
+$(document).ready(function(){
+  $("button").click(function(){
+    var server_data =  {"apikey": $("#apikey").val(),"text": $("#text2").val(),"mediaSearch": $("#mediaSearch2").val(),"wallpaper": $("#wallpaper2").val(),"title": $("#title2").val(),"location": $("#location2").val(),"say": $("#say2").val(),"language": $("#language2").val(),"deviceId": $("#deviceId").val(),"deviceId2": $("#Asus2").val(),"url":$("#url2").val(),"app":$("#app2").val(),"clipboard":$("#clipboard2").val(),"file":$("#file2").val(),"callnumber":$("#callnumber2").val(),"find":$("#find2").val()};
+    $.ajax({url: "/sendPush",
+        type: 'POST',
+        data: JSON.stringify(server_data),
+        contentType: "application/json",
+        dataType: "json", success: function(result){
+      $("#div1").html(result);
+    }});
+  });
+});
+</script>
